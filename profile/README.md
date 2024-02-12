@@ -1,12 +1,44 @@
-## Hi there 👋
 
-<!--
+Fignon is an ExpressJs like framework for PHP. It is designed to be simple and easy to use.
 
-**Here are some ideas to get you started:**
+## Sample Hello in Fignon
 
-🙋‍♀️ A short introduction - what is your organization all about?
-🌈 Contribution guidelines - how can the community get involved?
-👩‍💻 Useful resources - where can the community find your docs? Is there anything else the community should know?
-🍿 Fun facts - what does your team eat for breakfast?
-🧙 Remember, you can do mighty things with the power of [Markdown](https://docs.github.com/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
--->
+```php
+<?php
+declare(strict_types=1);
+
+include_once __DIR__ . "/../vendor/autoload.php";
+
+use Fignon\Middlewares\BodyParser;
+use Fignon\Tunnel;
+use Fignon\Request\Request;
+use Fignon\Response\Response;
+use Fignon\Middlewares\Griot;
+use Fignon\Extra\TwigEngine;
+
+$app = new Tunnel();
+
+// Some config
+$app->set('env', 'development');
+$app->set('baseUrl', 'http://localhost:8000');
+$app->set('debug', true);
+
+// View engine initialization
+$app->set('views', dirname(__DIR__) . '/tests-data/templates');
+$app->set('views cache', dirname(__DIR__) . '/tests-data/var/cache');
+$app->set('view engine options', []); // Add options to the view engine
+$app->engine('twig', new TwigEngine()); 
+
+
+// Some handy middlewares
+$app->use(new BodyParser());
+$app->use(new Griot());
+
+
+$app->get('/', function (Request $req, Response $res) {
+    // You can use LaravelBlade, Plates, Twig, Smarty, vanilla Php or whatever you want as view engine which can run in php environment
+    $res->status(200)->render('hello.twig.html');
+})->as('get_hello');
+
+$app->listen();
+```
